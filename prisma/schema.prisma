@@ -1,0 +1,65 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model LineAccount {
+  LineRowId        Int     @id @default(autoincrement())
+  LineAccountId    String?
+  LineAccountName  String?
+  LineAccountAlias String?
+  LineAccountImg   String?
+
+  createdAt DateTime @default(now())
+}
+
+model Building {
+  BuildRowId Int        @id @default(autoincrement())
+  BuildName  String?
+  createdAt  DateTime?  @default(now()) @db.Timestamptz(3)
+  location   Location[]
+}
+
+model Location {
+  LocationRowId Int       @id @default(autoincrement())
+  LocationName  String?
+  Floor         String?
+  buildRowId    Int?
+  building      Building? @relation(fields: [buildRowId], references: [BuildRowId])
+}
+
+model JobRequest {
+  JobRowId           Int            @id @default(autoincrement())
+  PatientName        String?
+  HN                 String?
+  VN                 String?
+  Age                String?
+  DOB                String?
+  PatientLocation    String?
+  RequestService     Json?
+  RequestDestination Json?
+  RequestOR          String?
+  RequestRehab       String?
+  DestinationService String?
+  RequestByLocation  String?
+  RequestDate        String?
+  RequestTime        String?
+  methodRowId        Int?
+  requestMethod      RequestMethod? @relation(fields: [methodRowId], references: [MethodRowId])
+}
+
+model RequestMethod {
+  MethodRowId Int          @id @default(autoincrement())
+  Name        String?
+  jobRequest  JobRequest[]
+}
